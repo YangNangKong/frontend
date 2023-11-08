@@ -1,4 +1,6 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application/register_page.dart';
 
 class LoginPage extends StatelessWidget{
   const LoginPage({ Key? key }) : super(key: key);
@@ -54,6 +56,30 @@ class LoginPage extends StatelessWidget{
                     child: Text("관리자 로그인")
                 ),
               ),
+              Column(
+                children: [
+                  RichText(
+                    text: TextSpan(
+                      text: 'Don\'t have an account? ',
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Colors.black,
+                      ),
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: 'Sign Up',
+                          style: TextStyle(
+                            color: Colors.blueAccent,
+                            fontSize: 15,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () => Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterPage()))
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              )
             ],
           ),
         ),
