@@ -8,7 +8,7 @@ class LoginFormData {
   });
 
   Map<String, dynamic> toJson() => {
-    'username': username,
+    'user_name': username,
     'password': password,
   };
 }
