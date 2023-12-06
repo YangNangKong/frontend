@@ -5,9 +5,8 @@ import 'package:numeric_keyboard/numeric_keyboard.dart';
 List<String> dropDownList = ['1명', '2명', '3명', '4명', '5명 이상'];
 
 class HomePage extends StatefulWidget {
-  HomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
+  HomePage({Key? key}) : super(key: key);
+  final String title = '';
 
   @override
   _HomePageState createState() => _HomePageState();
