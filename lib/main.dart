@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_application/home.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_application/routes.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -19,6 +21,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: _buildTheme(Brightness.light),
       home: HomePage(),
+      routes: routes,
     );
   }
 
