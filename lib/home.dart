@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'login_page.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:numeric_keyboard/numeric_keyboard.dart';
 
 List<String> dropDownList = ['1명', '2명', '3명', '4명', '5명 이상'];
@@ -14,11 +14,38 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String text = '';
+  static final storage = FlutterSecureStorage();
+  dynamic userInfo = '';
+
+  //flutter_secure_storage 사용을 위한 초기화 작업
+  @override
+  void initState() {
+    super.initState();
+
+    // 비동기로 flutter secure storage 정보를 불러오는 작업
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _asyncMethod();
+    });
+  }
+
+  _asyncMethod() async {
+    // read 함수로 key값에 맞는 정보를 불러오고 데이터타입은 String 타입
+    // 데이터가 없을때는 null을 반환
+    userInfo = await storage.read(key:'login');
+    print(userInfo);
+    // user의 정보가 있다면 로그인 후 들어가는 첫 페이지로 넘어가게 합니다.
+    if (userInfo != null) {
+
+    } else {
+      print('로그인이 필요합니다');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          // automaticallyImplyLeading: false,
           centerTitle: true,
           backgroundColor: Colors.amber,
           title: Text(
@@ -33,10 +60,7 @@ class _HomePageState extends State<HomePage> {
             IconButton(
               icon: Icon(Icons.account_circle),
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginPage()),
-                );
+                Navigator.pushNamed(context, '/login');
               },
             ),
           ],
