@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:numeric_keyboard/numeric_keyboard.dart';
 
-List<String> dropDownList = ['1명', '2명', '3명', '4명', '5명 이상'];
+// List<String> dropDownList = ['1명', '2명', '3명', '4명', '5명 이상'];
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
@@ -13,7 +13,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  TextEditingController _textEditingController = TextEditingController();
   String text = '';
+  String hintText = '핸드폰 번호를 입력 해주세요.';
   static final storage = FlutterSecureStorage();
   dynamic userInfo = '';
 
@@ -31,11 +33,10 @@ class _HomePageState extends State<HomePage> {
   _asyncMethod() async {
     // read 함수로 key값에 맞는 정보를 불러오고 데이터타입은 String 타입
     // 데이터가 없을때는 null을 반환
-    userInfo = await storage.read(key:'login');
+    userInfo = await storage.read(key: 'login');
     print(userInfo);
     // user의 정보가 있다면 로그인 후 들어가는 첫 페이지로 넘어가게 합니다.
     if (userInfo != null) {
-
     } else {
       print('로그인이 필요합니다');
     }
@@ -43,19 +44,18 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    bool isHintText = text.isEmpty || text == hintText;
     return Scaffold(
         appBar: AppBar(
           // automaticallyImplyLeading: false,
           centerTitle: true,
           backgroundColor: Colors.amber,
-          title: Text(
-              "YNK Tabling",
+          title: Text("YNK Tabling",
               style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
                 color: Colors.black87,
-              )
-          ),
+              )),
           actions: [
             IconButton(
               icon: Icon(Icons.account_circle),
@@ -67,98 +67,115 @@ class _HomePageState extends State<HomePage> {
         ),
         body: Center(
           child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Row(
-                  children: <Widget>[
-                    Flexible(
-                      fit: FlexFit.tight,
-                      child: Container(
-                        child: Image.network(
-                          "https://tumblbug-pci.imgix.net/c854afea9f2858de047ed6c4037079a86d8e85c2/4ca37de55d78bcfd0d96d1a157d808698c143913/1dfc9a35b736b925bc75efe3f532a229991851d6/855bab0e-496b-4693-a436-4472cf71184c.jpeg?ixlib=rb-1.1.0&w=1240&h=930&auto=format%2Ccompress&lossless=true&fit=crop&s=3763fe763047bf77397bc94117ff2984",
-                          width: 400,
-                          // height: 400,
-                        ),
+              child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Row(
+                children: <Widget>[
+                  Container(
+                    margin: EdgeInsets.only(left: 150),
+                    // fit: FlexFit.tight,
+                    child: Container(
+                      child: Image.asset(
+                        "assets/images/waiting.jpg",
+                        width: 450,
+                        height: 450,
                       ),
                     ),
-                    Flexible(
-                      fit: FlexFit.tight,
-                      child: Column(
-                        children: [
-                          Text(text,
-                            style: TextStyle(
+                  ),
+                  Flexible(
+                    fit: FlexFit.tight,
+                    child: Column(
+                      children: [
+                        Text(
+                          formatPhoneNumber(text, isHintText),
+                          style: TextStyle(
                               fontSize: 30,
+                              color:
+                                  isHintText ? Colors.black26 : Colors.black),
+                        ),
+                        Container(
+                          width: 700,
+                          // color: Colors.orange,
+                          child: NumericKeyboard(
+                            onKeyboardTap: _onKeyboardTap,
+                            textColor: Colors.black,
+                            rightButtonFn: () {
+                              setState(() {
+                                text = text.substring(0, text.length - 1);
+                              });
+                            },
+                            rightIcon: Icon(
+                              Icons.backspace,
+                              color: Colors.black,
+                            ),
+                            leftButtonFn: () {
+                              print('left button clicked');
+                            },
+                            leftIcon: Icon(
+                              Icons.check,
+                              color: Colors.black,
                             ),
                           ),
-                          Container(
-                            width: 700,
-                            // color: Colors.orange,
-                            child: NumericKeyboard(
-                              onKeyboardTap: _onKeyboardTap,
-                              textColor: Colors.black,
-                              rightButtonFn: () {
-                                setState(() {
-                                  text = text.substring(0, text.length - 1);
-                                });
-                              },
-                              rightIcon: Icon(
-                                Icons.backspace,
-                                color: Colors.black,
-                              ),
-                              leftButtonFn: () {
-                                print('left button clicked');
-                              },
-                              leftIcon: Icon(
-                                Icons.check,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                '인원',
-                                style: TextStyle(
-                                  fontSize: 30,
-                                ),
-                              ),
-                              Container(
-                                width: 100,
-                                child: DropdownButton(
-                                  items: dropDownList.map<DropdownMenuItem<String>>((
-                                      String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Text(
-                                        value,
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                        ),
-                                      ),
-                                    );
-                                  }).toList(), onChanged: (value) {},
-                                )
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
+                        ),
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.center,
+                        //   children: [
+                        //     Text(
+                        //       '인원',
+                        //       style: TextStyle(
+                        //         fontSize: 30,
+                        //       ),
+                        //     ),
+                        //     Container(
+                        //       width: 100,
+                        //       child: DropdownButton(
+                        //         items: dropDownList.map<DropdownMenuItem<String>>((
+                        //             String value) {
+                        //           return DropdownMenuItem<String>(
+                        //             value: value,
+                        //             child: Text(
+                        //               value,
+                        //               style: TextStyle(
+                        //                 fontSize: 20,
+                        //               ),
+                        //             ),
+                        //           );
+                        //         }).toList(), onChanged: (value) {},
+                        //       )
+                        //     ),
+                        //   ],
+                        // )
+                      ],
                     ),
-                  ],
-                ),
-              ],
-            )
-          ),
-        )
-    );
+                  ),
+                ],
+              ),
+            ],
+          )),
+        ));
   }
 
   _onKeyboardTap(String value) {
     setState(() {
       text = text + value;
     });
+  }
+
+  String formatPhoneNumber(String formatted, bool isHintText) {
+    if (isHintText) {
+      return hintText;
+    }
+    formatted = formatted.replaceAll(RegExp(r'\D'), ''); // 숫자 이외의 문자 제거
+    if (formatted.length >= 4) {
+      formatted = formatted.substring(0, 3) +
+          '-' +
+          formatted.substring(3, formatted.length > 7 ? 7 : formatted.length) +
+          (formatted.length >= 8
+              ? '-' + formatted.substring(7, formatted.length)
+              : '');
+    }
+    return formatted;
   }
 }
