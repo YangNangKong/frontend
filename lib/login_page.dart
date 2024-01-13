@@ -6,9 +6,9 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'login_form_data.dart';
 
-
 class LoginPage extends StatefulWidget {
-  const LoginPage({ Key? key }) : super(key: key);
+  const LoginPage({Key? key}) : super(key: key);
+
   @override
   State<LoginPage> createState() => _LoginPage();
 }
@@ -33,7 +33,7 @@ class _LoginPage extends State<LoginPage> {
   _asyncMethod() async {
     // read 함수로 key값에 맞는 정보를 불러오고 데이터타입은 String 타입
     // 데이터가 없을때는 null을 반환
-    userInfo = await storage.read(key:'login');
+    userInfo = await storage.read(key: 'login');
     // user의 정보가 있다면 로그인 후 들어가는 첫 페이지로 넘어가게 합니다.
     if (userInfo != null) {
       Navigator.pushNamed(context, '/');
@@ -48,102 +48,106 @@ class _LoginPage extends State<LoginPage> {
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Colors.amber,
-        title: Text(
-            "YNK Tabling",
+        title: Text("YNK Tabling",
             style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,
               color: Colors.black87,
-            )
-        ),
+            )),
       ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Center(
-            child: Form(
-              key: formKey,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(32),
-                    child: Image.network(
-                      "https://tumblbug-pci.imgix.net/c854afea9f2858de047ed6c4037079a86d8e85c2/4ca37de55d78bcfd0d96d1a157d808698c143913/1dfc9a35b736b925bc75efe3f532a229991851d6/855bab0e-496b-4693-a436-4472cf71184c.jpeg?ixlib=rb-1.1.0&w=1240&h=930&auto=format%2Ccompress&lossless=true&fit=crop&s=3763fe763047bf77397bc94117ff2984",
-                      width: 400,
-                      height: 400,
-                    ),
-                  ),
-                  Container(
-                      width: 400,
-                      child: TextFormField(
-                          keyboardType: TextInputType.text,
-                          decoration: InputDecoration(
-                            labelText: "이메일",
+              child: Form(
+                  key: formKey,
+                  child: Column(
+                    children: [
+                      Container(
+                        child: Text(
+                          "Login",
+                          style: TextStyle(
+                            fontSize: 35,
+                            fontWeight: FontWeight.bold,
                           ),
-                          onChanged: (value){
-                            formData.username = value;
-                          }
-                      )
-                  ),
-                  Container(
-                    width: 400,
-                    child: TextField(
-                        keyboardType: TextInputType.text,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          labelText: "비밀번호",
                         ),
-                        onChanged: (value){
-                          formData.password = value;
-                        }
-                    ),
-                  ),
-                  Container(
-                    width: 400,
-                    margin: EdgeInsets.only(top: 24),
-                    child: ElevatedButton(
-                        onPressed: () async {
-                            if (await login() == true) {
-                              Navigator.pushNamed(context, '/');
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.amber,
-                          foregroundColor: Colors.black38
-                          ),
-                          child: Text("관리자 로그인")
-                          ),
-                          ),
-                          Column(
+                        margin: EdgeInsets.only(top: 50),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(32),
+                        child: Image.asset(
+                          "assets/images/login.jpg",
+                          width: 250,
+                          height: 250,
+                        ),
+                      ),
+                      Container(
+                          width: 400,
+                          child: TextFormField(
+                              keyboardType: TextInputType.text,
+                              decoration: InputDecoration(
+                                labelText: "이메일",
+                              ),
+                              onChanged: (value) {
+                                formData.username = value;
+                              })),
+                      Container(
+                        width: 400,
+                        child: TextField(
+                            keyboardType: TextInputType.text,
+                            obscureText: true,
+                            decoration: InputDecoration(
+                              labelText: "비밀번호",
+                            ),
+                            onChanged: (value) {
+                              formData.password = value;
+                            }),
+                      ),
+                      Container(
+                        width: 400,
+                        margin: EdgeInsets.only(top: 24),
+                        child: ElevatedButton(
+                            onPressed: () async {
+                              if (await login() == true) {
+                                Navigator.pushNamed(context, '/');
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.amber,
+                                foregroundColor: Colors.black),
+                            child: Text("로그인")),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(top: 10),
+                        child: Column(
                           children: [
-                          RichText(
-                          text: TextSpan(
-                          text: '아직 회원이 아니신가요? ',
-                          style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.black,
-                          ),
-                          children: <TextSpan>[
-                          TextSpan(
-                          text: '회원가입',
-                          style: TextStyle(
-                          color: Colors.blueAccent,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-
+                            RichText(
+                              text: TextSpan(
+                                text: '아직 회원이 아니신가요? ',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.black,
                                 ),
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = () => Navigator.pushNamed(context, '/register')
+                                children: <TextSpan>[
+                                  TextSpan(
+                                      text: '회원가입',
+                                      style: TextStyle(
+                                        color: Colors.blueAccent,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () => Navigator.pushNamed(
+                                            context, '/register')),
+                                ],
+                              ),
                             ),
                           ],
                         ),
-                      ),
+                        // margin: EdgeInsets.only(bottom: 50),
+                      )
                     ],
-                  )
-                ],
-              )
-            )
-          ),
+                  ))),
         ),
       ),
     );
