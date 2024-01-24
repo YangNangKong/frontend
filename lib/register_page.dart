@@ -28,7 +28,7 @@ class _RegisterPage extends State<RegisterPage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: Colors.amber,
+        backgroundColor: Colors.blueAccent,
         title: Text("YNK Tabling",
             style: TextStyle(
               fontSize: 32,
@@ -55,6 +55,7 @@ class _RegisterPage extends State<RegisterPage> {
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 24,
+                        fontWeight: FontWeight.bold
                       ),
                     ),
                   ),
@@ -112,9 +113,16 @@ class _RegisterPage extends State<RegisterPage> {
                     child: ElevatedButton(
                         onPressed: register,
                         style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.amber,
-                            foregroundColor: Colors.black38),
-                        child: Text("회원 가입")),
+                          backgroundColor: Colors.blueAccent,
+                          foregroundColor: Colors.white,
+                        ),
+                        child: Text(
+                            "회원 가입",
+                            style: TextStyle(
+                          fontWeight: FontWeight.bold
+                        )
+                      )
+                    ),
                   ),
                 ],
               ),

@@ -47,7 +47,7 @@ class _LoginPage extends State<LoginPage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: Colors.amber,
+        backgroundColor: Colors.blueAccent,
         title: Text("YNK Tabling",
             style: TextStyle(
               fontSize: 32,
@@ -113,7 +113,7 @@ class _LoginPage extends State<LoginPage> {
                               }
                             },
                             style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.amber,
+                                backgroundColor: Colors.blueAccent,
                                 foregroundColor: Colors.black),
                             child: Text("로그인")),
                       ),
