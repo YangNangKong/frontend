@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:numeric_keyboard/numeric_keyboard.dart';
 
-// List<String> dropDownList = ['1명', '2명', '3명', '4명', '5명 이상'];
-
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
   final String title = '';
@@ -13,7 +11,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  TextEditingController _textEditingController = TextEditingController();
   String text = '';
   String hintText = '핸드폰 번호를 입력 해주세요.';
   static final storage = FlutterSecureStorage();
@@ -49,7 +46,7 @@ class _HomePageState extends State<HomePage> {
         appBar: AppBar(
           // automaticallyImplyLeading: false,
           centerTitle: true,
-          backgroundColor: Colors.amber,
+          backgroundColor: Colors.blueAccent,
           title: Text("YNK Tabling",
               style: TextStyle(
                 fontSize: 32,
@@ -111,7 +108,9 @@ class _HomePageState extends State<HomePage> {
                               color: Colors.black,
                             ),
                             leftButtonFn: () {
-                              print('left button clicked');
+                              if (text.length == 11) {
+                                Navigator.pushNamed(context, '/selectPeople');
+                              }
                             },
                             leftIcon: Icon(
                               Icons.check,
@@ -119,34 +118,6 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                         ),
-                        // Row(
-                        //   mainAxisAlignment: MainAxisAlignment.center,
-                        //   children: [
-                        //     Text(
-                        //       '인원',
-                        //       style: TextStyle(
-                        //         fontSize: 30,
-                        //       ),
-                        //     ),
-                        //     Container(
-                        //       width: 100,
-                        //       child: DropdownButton(
-                        //         items: dropDownList.map<DropdownMenuItem<String>>((
-                        //             String value) {
-                        //           return DropdownMenuItem<String>(
-                        //             value: value,
-                        //             child: Text(
-                        //               value,
-                        //               style: TextStyle(
-                        //                 fontSize: 20,
-                        //               ),
-                        //             ),
-                        //           );
-                        //         }).toList(), onChanged: (value) {},
-                        //       )
-                        //     ),
-                        //   ],
-                        // )
                       ],
                     ),
                   ),
@@ -167,7 +138,13 @@ class _HomePageState extends State<HomePage> {
     if (isHintText) {
       return hintText;
     }
-    formatted = formatted.replaceAll(RegExp(r'\D'), ''); // 숫자 이외의 문자 제거
+    if (formatted.length > 11) {
+      // 11자리 이상 입력방지
+      formatted = formatted.substring(0, 11);
+    }
+    // 숫자 이외의 문자 제거
+    formatted = formatted.replaceAll(RegExp(r'\D'), '');
+    // 핸드폰 번호 포맷팅
     if (formatted.length >= 4) {
       formatted = formatted.substring(0, 3) +
           '-' +
