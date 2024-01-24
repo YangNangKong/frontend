@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: _buildTheme(Brightness.light),
       home: HomePage(),
+      initialRoute: '/',
       routes: routes,
     );
   }
