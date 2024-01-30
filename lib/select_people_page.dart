@@ -76,30 +76,57 @@ class _SelectPeoplePageState extends State<SelectPeoplePage> {
                 fontSize: 30,
               ),
             ),
-            Container(
+            Padding(
+              padding: const EdgeInsets.only(top: 10.0),
+              child: Container(
                 width: 150,
                 height: 60,
                 margin: EdgeInsets.only(left: 50),
                 child: DropdownButton(
-                    value: selected,
-                    items: peopleCountList
-                        .map((e) => DropdownMenuItem(
-                              value: e, // 선택 시 onChanged 를 통해 반환할 value
-                              child: Text(e),
-                            ))
-                        .toList(),
-                    onChanged: (value) {
-                      // items 의 DropdownMenuItem 의 value 반환
-                      setState(() {
-                        selected = value!;
-                      });
-                    },
-                    borderRadius: BorderRadius.circular(10),
-                    menuMaxHeight: 300,
-                    isExpanded: true,
-                    alignment: Alignment.bottomLeft,
-                    iconSize: 40,
-                    style: TextStyle(fontSize: 25, color: Colors.black))),
+                  value: selected,
+                  items: peopleCountList
+                      .map(
+                        (e) => DropdownMenuItem(
+                          value: e, // 선택 시 onChanged 를 통해 반환할 value
+                          child: Text(e),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (value) {
+                    // items 의 DropdownMenuItem 의 value 반환
+                    setState(() {
+                      selected = value!;
+                    });
+                  },
+                  borderRadius: BorderRadius.circular(10),
+                  menuMaxHeight: 300,
+                  isExpanded: true,
+                  alignment: Alignment.bottomLeft,
+                  iconSize: 40,
+                  style: TextStyle(fontSize: 25, color: Colors.black),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 30),
+              child: Container(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    Navigator.pushNamed(context, '/');
+                  },
+                  style: ElevatedButton.styleFrom(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      backgroundColor: Colors.blueAccent),
+                  child: Text(
+                    '확인',
+                    style: TextStyle(
+                      fontSize: 30,
+                    ),
+                  ),
+                ),
+              ),
+            )
           ],
         ))));
   }
