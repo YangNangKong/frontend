@@ -10,6 +10,7 @@ import 'home.dart';
 
 class RegisterPage extends StatefulWidget {
   RegisterPage({Key? key}) : super(key: key);
+
   @override
   State<RegisterPage> createState() => _RegisterPage();
 }
@@ -40,97 +41,113 @@ class _RegisterPage extends State<RegisterPage> {
         child: Padding(
           padding: const EdgeInsets.all(10),
           child: Center(
-            child: Form(
-              key: formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(
-                      top: 100,
-                      bottom: 50,
-                    ),
-                    child: Text(
-                      "회원 등록",
-                      style: TextStyle(
+              child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  margin: EdgeInsets.only(
+                    top: 100,
+                    bottom: 50,
+                  ),
+                  child: Text(
+                    "회원 등록",
+                    style: TextStyle(
                         color: Colors.black,
                         fontSize: 24,
-                        fontWeight: FontWeight.bold
-                      ),
-                    ),
+                        fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(
-                    width: 300,
-                    child: TextFormField(
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                        labelText: "이름",
-                      ),
-                      onChanged: (value){
-                        formData.username = value;
-                      },
-                    ),
-                  ),
-                  SizedBox(
-                    width: 300,
-                    child: TextFormField(
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        labelText: "비밀 번호",
-                      ),
-                      onChanged: (value){
-                        formData.password = value;
-                      },
-                    ),
-                  ),
-                  SizedBox(
-                    width: 300,
-                    child: TextFormField(
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                        labelText: "이메일",
-                      ),
-                      onChanged: (value){
-                        formData.email = value;
-                      },
-                    ),
-                  ),
-                  SizedBox(
-                    width: 300,
-                    child: TextFormField(
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                        labelText: "핸드폰 번호",
-                      ),
-                      onChanged: (value){
-                        formData.phoneNumber = value;
-                      },
-                    ),
-                  ),
-                  Container(
-                    width: 250,
-                    margin: EdgeInsets.only(top: 24),
-                    child: ElevatedButton(
-                        onPressed: register,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blueAccent,
-                          foregroundColor: Colors.white,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 300,
+                      margin: EdgeInsets.only(left: 90),
+                      child: TextFormField(
+                        keyboardType: TextInputType.text,
+                        decoration: InputDecoration(
+                          labelText: "이름",
                         ),
-                        child: Text(
-                            "회원 가입",
-                            style: TextStyle(
-                          fontWeight: FontWeight.bold
-                        )
-                      )
+                        onChanged: (value) {
+                          formData.username = value;
+                        },
+                      ),
                     ),
+                    Container(
+                      margin: EdgeInsets.only(left: 10),
+                      child: ElevatedButton(
+                          onPressed: checkDuplicated,
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.lightGreen,
+                              minimumSize: Size(50, 30)),
+                          child: Text(
+                            '중복 체크',
+                          )),
+                    )
+                  ],
+                ),
+                SizedBox(
+                  width: 300,
+                  child: TextFormField(
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: "비밀 번호",
+                    ),
+                    onChanged: (value) {
+                      formData.password = value;
+                    },
                   ),
-                ],
-              ),
-            )
-          ),
+                ),
+                SizedBox(
+                  width: 300,
+                  child: TextFormField(
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                      labelText: "이메일",
+                    ),
+                    onChanged: (value) {
+                      formData.email = value;
+                    },
+                  ),
+                ),
+                SizedBox(
+                  width: 300,
+                  child: TextFormField(
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                      labelText: "핸드폰 번호",
+                    ),
+                    onChanged: (value) {
+                      formData.phoneNumber = value;
+                    },
+                  ),
+                ),
+                Container(
+                  width: 250,
+                  margin: EdgeInsets.only(top: 24),
+                  child: ElevatedButton(
+                      onPressed: register,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blueAccent,
+                        foregroundColor: Colors.white,
+                      ),
+                      child: Text("회원 가입",
+                          style: TextStyle(fontWeight: FontWeight.bold))),
+                ),
+              ],
+            ),
+          )),
         ),
       ),
     );
+  }
+
+  Future<void> checkDuplicated() async {
+    // 유저 중복체크 로직
   }
 
   Future<void> register() async {
@@ -142,13 +159,26 @@ class _RegisterPage extends State<RegisterPage> {
       body: jsonEncode(formData),
     );
     print(result.body);
-    print(result.statusCode);
-    if (result.statusCode == 201) {
+    // print(result.statusCode);
+    if (result.statusCode == 200) {
       showToast("success");
       sleep(Duration(seconds: 1));
-      Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => HomePage()));
     } else if (result.statusCode == 400) {
       // TODO: 유효성 검사에 실패한 필드에 실패 내용 노출
+      Map<String, dynamic> decodedJson = json.decode(result.body);
+      List<dynamic> errors = decodedJson['errors'];
+      print(errors);
+      List<String> fieldErrorMessages = [];
+      for (var error in errors) {
+        if (error['type'] == 'field') {
+          fieldErrorMessages.add(error['msg']);
+        }
+      }
+      // 결과 출력
+      print(fieldErrorMessages);
+      showToast("invalid");
     } else {
       showToast("fail");
     }
@@ -163,7 +193,7 @@ class _RegisterPage extends State<RegisterPage> {
         textColor: Colors.white,
         fontSize: 20,
       );
-    } else {
+    } else if (result == "fail") {
       Fluttertoast.showToast(
         msg: "회원 등록에 실패하였습니다.",
         gravity: ToastGravity.CENTER,
@@ -171,7 +201,24 @@ class _RegisterPage extends State<RegisterPage> {
         textColor: Colors.black,
         fontSize: 20,
       );
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('알림'),
+            content: Text('입력하신 정보가 올바르지 않습니다.'),
+            actions: [
+              TextButton(
+                child: Text('닫기'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
     }
   }
-
 }
