@@ -2,8 +2,9 @@ import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'home_page.dart';
 import 'login_form_data.dart';
 
 class LoginPage extends StatefulWidget {
@@ -16,31 +17,6 @@ class LoginPage extends StatefulWidget {
 class _LoginPage extends State<LoginPage> {
   final formKey = GlobalKey<FormState>();
   LoginFormData formData = LoginFormData();
-  static final storage = FlutterSecureStorage();
-  dynamic userInfo = '';
-
-  //flutter_secure_storage 사용을 위한 초기화 작업
-  @override
-  void initState() {
-    super.initState();
-
-    // 비동기로 flutter secure storage 정보를 불러오는 작업
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _asyncMethod();
-    });
-  }
-
-  _asyncMethod() async {
-    // read 함수로 key값에 맞는 정보를 불러오고 데이터타입은 String 타입
-    // 데이터가 없을때는 null을 반환..
-    userInfo = await storage.read(key: 'login');
-    // user의 정보가 있다면 로그인 후 들어가는 첫 페이지로 넘어가게 합니다.
-    if (userInfo != null) {
-      Navigator.pushNamed(context, '/');
-    } else {
-      print('로그인이 필요합니다');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -163,15 +139,19 @@ class _LoginPage extends State<LoginPage> {
         },
         body: json.encode(formData),
       );
-      // print(result.body);
+      print(result.body);
       if (result.statusCode == 200) {
-        var val = json.encode(formData);
-        print(val);
-        await storage.write(
-          key: 'login',
-          value: val,
-        );
+        // var val = json.encode(formData);
+
         showToast("success");
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', json.decode(result.body)['token']);
+
+        // 로그인 후에는 홈 페이지로 이동
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
         return true;
       } else {
         showToast("fail");

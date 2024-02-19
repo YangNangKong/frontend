@@ -40,6 +40,9 @@ dependencies:
   fluttertoast: ^8.2.4
   numeric_keyboard: ^1.0.0
   flutter_secure_storage: ^9.0.0
+  graphql_flutter: ^5.1.2
+  shared_preferences: ^2.2.2
+  provider: ^5.0.0
 
 dev_dependencies:
   flutter_test:
