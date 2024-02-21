@@ -3,10 +3,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application/register_form_data.dart';
+import 'package:flutter_application/widget/app_bar_widget.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
-import 'home.dart';
+import 'home_page.dart';
 
 class RegisterPage extends StatefulWidget {
   RegisterPage({Key? key}) : super(key: key);
@@ -18,6 +19,7 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPage extends State<RegisterPage> {
   final formKey = GlobalKey<FormState>();
   RegisterFormData formData = RegisterFormData();
+  bool isDuplicatedCheckPass = false;
 
   @override
   void initState() {
@@ -27,16 +29,7 @@ class _RegisterPage extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: Colors.blueAccent,
-        title: Text("YNK Tabling",
-            style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            )),
-      ),
+      appBar: AppBarWidget(),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(10),
@@ -80,7 +73,13 @@ class _RegisterPage extends State<RegisterPage> {
                     Container(
                       margin: EdgeInsets.only(left: 10),
                       child: ElevatedButton(
-                          onPressed: checkDuplicated,
+                          onPressed: () async {
+                            bool result =
+                                await checkDuplicated(formData.username);
+                            setState(() {
+                              isDuplicatedCheckPass = result;
+                            });
+                          },
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.lightGreen,
                               minimumSize: Size(50, 30)),
@@ -146,8 +145,17 @@ class _RegisterPage extends State<RegisterPage> {
     );
   }
 
-  Future<void> checkDuplicated() async {
+  Future<bool> checkDuplicated(String? username) async {
     // 유저 중복체크 로직
+    print("중복체크를 시작합니다.");
+
+    // var result = await http.get(
+    //   Uri.parse('http://10.0.2.2:3000/user/' + username!),
+    //   headers: <String, String>{
+    //     'Content-Type': 'application/json',
+    //   },
+    // );
+    return true;
   }
 
   Future<void> register() async {

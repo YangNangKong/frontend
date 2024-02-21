@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/select_people_page.dart';
+import 'package:flutter_application/widget/app_bar_widget.dart';
 import 'package:numeric_keyboard/numeric_keyboard.dart';
 
 class HomePage extends StatefulWidget {
@@ -15,28 +17,15 @@ class _HomePageState extends State<HomePage> {
   String hintText = '핸드폰 번호를 입력 해주세요.';
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     bool isHintText = text.isEmpty || text == hintText;
     return Scaffold(
-      appBar: AppBar(
-        // automaticallyImplyLeading: false,
-        centerTitle: true,
-        backgroundColor: Colors.blueAccent,
-        title: Text("YNK Tabling",
-            style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            )),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.account_circle),
-            onPressed: () {
-              Navigator.pushNamed(context, '/login');
-            },
-          ),
-        ],
-      ),
+      appBar: AppBarWidget(),
       body: Center(
         child: SingleChildScrollView(
             child: Column(
@@ -83,7 +72,12 @@ class _HomePageState extends State<HomePage> {
                           ),
                           leftButtonFn: () {
                             if (text.length == 11) {
-                              Navigator.pushNamed(context, '/selectPeople');
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      SelectPeoplePage(number: text),
+                                ),
+                              );
                             }
                           },
                           leftIcon: Icon(
