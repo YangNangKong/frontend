@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_application/token_manager.dart';
 import 'home_page.dart';
 import 'login_page.dart';
 
@@ -22,8 +22,7 @@ class AuthCheck extends StatelessWidget {
   }
 
   Future<bool> _isLoggedIn() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('token'); // SharedPreferences에서 토큰을 불러옴
+    String? token = await TokenManager.getToken();
     print(token);
     return token != null; // 토큰이 null이 아니면 사용자가 로그인된 상태로 판단
   }

@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application/token_manager.dart';
+import 'package:flutter_application/widget/app_bar_widget.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'home_page.dart';
 import 'login_form_data.dart';
 
@@ -21,16 +22,7 @@ class _LoginPage extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: Colors.blueAccent,
-        title: Text("YNK Tabling",
-            style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            )),
-      ),
+      appBar: AppBarWidget(),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -144,9 +136,7 @@ class _LoginPage extends State<LoginPage> {
         // var val = json.encode(formData);
 
         showToast("success");
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('token', json.decode(result.body)['token']);
-
+        TokenManager.setToken(json.decode(result.body)['token']);
         // 로그인 후에는 홈 페이지로 이동
         Navigator.pushReplacement(
           context,
