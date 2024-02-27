@@ -2,7 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application/token_manager.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+
+import 'home_page.dart';
 
 class SelectPeoplePage extends StatefulWidget {
   final String number;
@@ -111,7 +114,7 @@ class _SelectPeoplePageState extends State<SelectPeoplePage> {
     );
   }
 
-  Future<bool> registerWaiting(String number, dynamic people) async {
+  Future<void> registerWaiting(String number, dynamic people) async {
     var result;
     Map<String, dynamic> data = {
       'shop_id': 1,
@@ -119,7 +122,7 @@ class _SelectPeoplePageState extends State<SelectPeoplePage> {
       'personnel': int.parse(people.replaceAll("명", "")),
       'phone_number': formatPhoneNumber(number),
     };
-    print(data);
+
     String? token = await TokenManager.getToken();
     if (token != null) {
       result = await http.post(
@@ -133,17 +136,16 @@ class _SelectPeoplePageState extends State<SelectPeoplePage> {
       );
     } else {
       Navigator.pushNamed(context, '/login');
-      return false;
     }
-    print(result.body);
-    if (result.statusCode == 200) {
-      // Navigator.pushReplacement(
-      //   context,
-      //   MaterialPageRoute(builder: (context) => HomePage()),
-      // );
-      return true;
+
+    if (result.statusCode == 201) {
+      showToast("success");
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
     } else {
-      return false;
+      showToast("fail");
     }
   }
 
@@ -157,5 +159,25 @@ class _SelectPeoplePageState extends State<SelectPeoplePage> {
     String thirdPart = phoneNumber.substring(7);
 
     return '$firstPart-$secondPart-$thirdPart';
+  }
+
+  void showToast(result) {
+    if (result == "success") {
+      Fluttertoast.showToast(
+        msg: "정상적으로 등록되었습니다.",
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.blue,
+        textColor: Colors.white,
+        fontSize: 20,
+      );
+    } else {
+      Fluttertoast.showToast(
+        msg: "등록에 실패했습니다. 관리자에게 문의해주세요.",
+        gravity: ToastGravity.CENTER,
+        backgroundColor: Colors.red,
+        textColor: Colors.black,
+        fontSize: 20,
+      );
+    }
   }
 }

@@ -19,7 +19,7 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPage extends State<RegisterPage> {
   final formKey = GlobalKey<FormState>();
   RegisterFormData formData = RegisterFormData();
-  bool isDuplicatedCheckPass = false;
+  bool _isDuplicatedCheckPass = false;
 
   @override
   void initState() {
@@ -73,13 +73,15 @@ class _RegisterPage extends State<RegisterPage> {
                     Container(
                       margin: EdgeInsets.only(left: 10),
                       child: ElevatedButton(
-                          onPressed: () async {
-                            bool result =
-                                await checkDuplicated(formData.username);
-                            setState(() {
-                              isDuplicatedCheckPass = result;
-                            });
-                          },
+                          onPressed: !_isDuplicatedCheckPass
+                              ? () async {
+                                  bool result =
+                                      await checkDuplicated(formData.username);
+                                  setState(() {
+                                    _isDuplicatedCheckPass = result;
+                                  });
+                                }
+                              : null,
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.lightGreen,
                               minimumSize: Size(50, 30)),
@@ -148,14 +150,17 @@ class _RegisterPage extends State<RegisterPage> {
   Future<bool> checkDuplicated(String? username) async {
     // 유저 중복체크 로직
     print("중복체크를 시작합니다.");
+    var result = await http.get(
+      Uri.parse('http://10.0.2.2:3000/user?user_name=' + username!),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+    );
 
-    // var result = await http.get(
-    //   Uri.parse('http://10.0.2.2:3000/user/' + username!),
-    //   headers: <String, String>{
-    //     'Content-Type': 'application/json',
-    //   },
-    // );
-    return true;
+    if (jsonDecode(result.body)['status'] == false) {
+      return true;
+    }
+    return false;
   }
 
   Future<void> register() async {
@@ -172,7 +177,9 @@ class _RegisterPage extends State<RegisterPage> {
       showToast("success");
       sleep(Duration(seconds: 1));
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => HomePage()));
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
     } else if (result.statusCode == 400) {
       // TODO: 유효성 검사에 실패한 필드에 실패 내용 노출
       Map<String, dynamic> decodedJson = json.decode(result.body);
