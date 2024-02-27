@@ -4,9 +4,13 @@ import 'package:flutter_application/token_manager.dart';
 class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => Size.fromHeight(kToolbarHeight);
+  final String adminPassword = "exit"; // 임시 로그아웃 비밀번호
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController passwordController = TextEditingController();
+    final Future<String?> token = TokenManager.getToken();
+
     return AppBar(
       automaticallyImplyLeading: false,
       centerTitle: true,
@@ -20,16 +24,71 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
         ),
       ),
       actions: [
-        Tooltip(
-          message: '로그아웃',
-          child: IconButton(
-            icon: Icon(Icons.exit_to_app),
-            onPressed: () async {
-              TokenManager.removeToken();
-              Navigator.pop(context);
-              Navigator.pushNamed(context, '/login');
-            },
-          ),
+        // 로그인 되어 토큰이 발급된 상태에만 로그아웃 표시
+        FutureBuilder<String?>(
+          future: token,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done &&
+                snapshot.hasData &&
+                snapshot.data is String) {
+              return Tooltip(
+                message: '로그아웃',
+                child: IconButton(
+                  icon: Icon(Icons.exit_to_app),
+                  onPressed: () async {
+                    showDialog(
+                      context: context,
+                      barrierDismissible: true, //바깥 영역 터치시 닫을지 여부 결정
+                      builder: ((context) {
+                        return AlertDialog(
+                          title: Text("로그아웃"),
+                          content: TextField(
+                            controller: passwordController,
+                            obscureText: true,
+                            decoration: InputDecoration(hintText: "관리자 비밀번호"),
+                          ),
+                          actions: <Widget>[
+                            Container(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text("취소"),
+                              ),
+                            ),
+                            Container(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  if (passwordController.text.toLowerCase() ==
+                                      adminPassword) {
+                                    // 비밀번호가 일치하는 경우 로그아웃
+                                    TokenManager.removeToken();
+                                    Navigator.pop(context);
+                                    Navigator.pushNamed(context, '/login');
+                                  } else {
+                                    // 비밀번호가 일치하지 않는 경우
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text("비밀번호가 일치하지 않습니다."),
+                                        duration: Duration(seconds: 2),
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: Text("확인"),
+                              ),
+                            ),
+                          ],
+                        );
+                      }),
+                    );
+                  },
+                ),
+              );
+            } else {
+              return SizedBox();
+            }
+          },
         ),
       ],
     );
