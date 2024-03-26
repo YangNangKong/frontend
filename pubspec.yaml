@@ -43,6 +43,7 @@ dependencies:
   graphql_flutter: ^5.1.2
   shared_preferences: ^2.2.2
   provider: ^5.0.0
+  email_validator: ^2.0.1
 
 dev_dependencies:
   flutter_test:

@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_application/register_form_data.dart';
 import 'package:flutter_application/widget/app_bar_widget.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -19,7 +21,39 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPage extends State<RegisterPage> {
   final formKey = GlobalKey<FormState>();
   RegisterFormData formData = RegisterFormData();
-  bool _isDuplicatedCheckPass = false;
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneNumberController = TextEditingController();
+  final FocusNode _idFocusNode = FocusNode();
+  final FocusNode _passwordFocusNode = FocusNode();
+  final FocusNode _confirmPasswordFocusNode = FocusNode();
+  final FocusNode _emailFocusNode = FocusNode();
+  final FocusNode _isPhoneNumberNode = FocusNode();
+
+  bool _isIdValid = false;
+  bool _isPasswordValid = false;
+  bool _isConfirmPasswordValid = false;
+  bool _isDuplicated = false;
+  bool _checkPass = false;
+  bool _isEmailValid = false;
+  bool _isPhoneNumberValid = false;
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    _emailController.dispose();
+    _phoneNumberController.dispose();
+    // TODO: 이벤트 리스너 처리 하기
+    _idFocusNode.dispose();
+    _passwordFocusNode.dispose();
+    _confirmPasswordFocusNode.dispose();
+    _emailFocusNode.dispose();
+    _isPhoneNumberNode.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -61,24 +95,46 @@ class _RegisterPage extends State<RegisterPage> {
                       width: 300,
                       margin: EdgeInsets.only(left: 90),
                       child: TextFormField(
+                        focusNode: _idFocusNode,
                         keyboardType: TextInputType.text,
                         decoration: InputDecoration(
                           labelText: "이름",
+                          suffixIcon: _isDuplicated
+                              ? Icon(Icons.error, color: Colors.red)
+                              : null,
+                          errorText: _isDuplicated ? '중복된 아이디입니다.' : null,
                         ),
                         onChanged: (value) {
                           formData.username = value;
+                          print(_checkPass);
+                          if (_isDuplicated) {
+                            setState(() {
+                              _isDuplicated = false;
+                            });
+                          }
+                          setState(() {
+                            _isIdValid = value.isNotEmpty;
+                          });
                         },
                       ),
                     ),
                     Container(
                       margin: EdgeInsets.only(left: 10),
                       child: ElevatedButton(
-                          onPressed: !_isDuplicatedCheckPass
+                          onPressed: !_isDuplicated && _isIdValid
                               ? () async {
                                   bool result =
                                       await checkDuplicated(formData.username);
+                                  if (!result && _isIdValid) {
+                                    // 중복이 아니고 아이디가 유효하면 패스워드로 이동
+                                    FocusScope.of(context)
+                                        .requestFocus(_passwordFocusNode);
+                                  }
+                                  print(result);
                                   setState(() {
-                                    _isDuplicatedCheckPass = result;
+                                    _checkPass = !result;
+                                    _isDuplicated = result;
+                                    _isIdValid = false;
                                   });
                                 }
                               : null,
@@ -95,23 +151,83 @@ class _RegisterPage extends State<RegisterPage> {
                   width: 300,
                   child: TextFormField(
                     obscureText: true,
+                    controller: _passwordController,
+                    focusNode: _passwordFocusNode,
                     decoration: InputDecoration(
                       labelText: "비밀 번호",
+                      suffixIcon: this._passwordController.text != '' &&
+                              this._confirmPasswordController.text != '' &&
+                              !_isConfirmPasswordValid
+                          ? Icon(Icons.error, color: Colors.red)
+                          : null,
+                      errorText: this._passwordController.text != '' &&
+                              this._confirmPasswordController.text != '' &&
+                              !_isConfirmPasswordValid
+                          ? '비밀번호가 일치하지 않습니다.'
+                          : null,
                     ),
                     onChanged: (value) {
                       formData.password = value;
+                      print(_isPasswordValid);
+                      if (value == _confirmPasswordController.text) {
+                        _isConfirmPasswordValid = true;
+                      } else {
+                        _isConfirmPasswordValid = false;
+                      }
                     },
                   ),
                 ),
                 SizedBox(
                   width: 300,
                   child: TextFormField(
-                    keyboardType: TextInputType.text,
+                    obscureText: true,
+                    controller: _confirmPasswordController,
+                    decoration: InputDecoration(
+                      labelText: '비밀번호 확인',
+                      suffixIcon: this._confirmPasswordController.text != '' &&
+                              this._passwordController.text != '' &&
+                              !_isConfirmPasswordValid
+                          ? Icon(Icons.error, color: Colors.red)
+                          : null,
+                      errorText: this._confirmPasswordController.text != '' &&
+                              this._passwordController.text != '' &&
+                              !_isConfirmPasswordValid
+                          ? '비밀번호가 일치하지 않습니다.'
+                          : null,
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        _isConfirmPasswordValid =
+                            value == _passwordController.text &&
+                                value.isNotEmpty;
+                      });
+                    },
+                  ),
+                ),
+                SizedBox(
+                  width: 300,
+                  child: TextFormField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.deny(RegExp(r'\s'))
+                    ],
                     decoration: InputDecoration(
                       labelText: "이메일",
+                      suffixIcon:
+                          this._emailController.text != '' && !_isEmailValid
+                              ? Icon(Icons.error, color: Colors.red)
+                              : null,
+                      errorText:
+                          this._emailController.text != '' && !_isEmailValid
+                              ? '이메일 형식이 잘못되었습니다.'
+                              : null,
                     ),
                     onChanged: (value) {
                       formData.email = value;
+                      setState(() {
+                        _isEmailValid = EmailValidator.validate(value.trim());
+                      });
                     },
                   ),
                 ),
@@ -156,11 +272,11 @@ class _RegisterPage extends State<RegisterPage> {
         'Content-Type': 'application/json',
       },
     );
-
+    // print(jsonDecode(result.body));
     if (jsonDecode(result.body)['status'] == false) {
-      return true;
+      return false;
     }
-    return false;
+    return true;
   }
 
   Future<void> register() async {
