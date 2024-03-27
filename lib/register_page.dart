@@ -34,11 +34,245 @@ class _RegisterPage extends State<RegisterPage> {
 
   bool _isIdValid = false;
   bool _isPasswordValid = false;
-  bool _isConfirmPasswordValid = false;
+  bool _isConfirmPasswordValid = true;
+  bool _passwordsMatch = false;
   bool _isDuplicated = false;
   bool _checkPass = false;
   bool _isEmailValid = false;
   bool _isPhoneNumberValid = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBarWidget(),
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Center(
+              child: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(
+                        top: 100,
+                        bottom: 50,
+                      ),
+                      child: Text(
+                        "회원 등록",
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 300,
+                          margin: EdgeInsets.only(left: 90),
+                          child: TextFormField(
+                            focusNode: _idFocusNode,
+                            keyboardType: TextInputType.text,
+                            decoration: InputDecoration(
+                              labelText: "이름",
+                              suffixIcon: _isDuplicated
+                                  ? Icon(Icons.error, color: Colors.red)
+                                  : null,
+                              errorText: _isDuplicated ? '중복된 아이디입니다.' : null,
+                            ),
+                            onChanged: (value) {
+                              formData.username = value;
+                              if (_isDuplicated) {
+                                setState(() {
+                                  _isDuplicated = false;
+                                });
+                              }
+                              setState(() {
+                                _isIdValid = value.isNotEmpty;
+                              });
+                            },
+                            onTap: () {
+                              _validatePassword();
+                            },
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(left: 10),
+                          child: ElevatedButton(
+                              onPressed: !_isDuplicated && _isIdValid
+                                  ? () async {
+                                      bool result = await checkDuplicated(
+                                          formData.username);
+                                      if (!result && _isIdValid) {
+                                        // 중복이 아니고 아이디가 유효하면 패스워드로 이동
+                                        FocusScope.of(context)
+                                            .requestFocus(_passwordFocusNode);
+                                      }
+                                      print(result);
+                                      setState(() {
+                                        _checkPass = !result;
+                                        _isDuplicated = result;
+                                        _isIdValid = false;
+                                      });
+                                    }
+                                  : null,
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.lightGreen,
+                                  minimumSize: Size(50, 30)),
+                              child: Text(
+                                '중복 체크',
+                              )),
+                        )
+                      ],
+                    ),
+                    SizedBox(
+                      width: 300,
+                      child: TextFormField(
+                        obscureText: true,
+                        controller: _passwordController,
+                        focusNode: _passwordFocusNode,
+                        decoration: InputDecoration(
+                          labelText: "비밀 번호",
+                          suffixIcon:
+                              _confirmPasswordController.text.isNotEmpty &&
+                                      !_isConfirmPasswordValid
+                                  ? Icon(Icons.error, color: Colors.red)
+                                  : null,
+                          errorText:
+                              _confirmPasswordController.text.isNotEmpty &&
+                                      !_isConfirmPasswordValid
+                                  ? '비밀번호가 일치하지 않습니다.'
+                                  : null,
+                        ),
+                        onChanged: (value) {
+                          formData.password = value;
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                      width: 300,
+                      child: TextFormField(
+                          obscureText: true,
+                          controller: _confirmPasswordController,
+                          focusNode: _confirmPasswordFocusNode,
+                          decoration: InputDecoration(
+                            labelText: '비밀번호 확인',
+                            suffixIcon:
+                                _confirmPasswordController.text.isNotEmpty &&
+                                        !_isConfirmPasswordValid
+                                    ? Icon(Icons.error, color: Colors.red)
+                                    : null,
+                            errorText:
+                                _confirmPasswordController.text.isNotEmpty &&
+                                        !_isConfirmPasswordValid
+                                    ? '비밀번호가 일치하지 않습니다.'
+                                    : null,
+                          ),
+                          onChanged: (value) {
+                            if (value == '') {
+                              setState(() {
+                                _isConfirmPasswordValid = true;
+                              });
+                            }
+                          }),
+                    ),
+                    SizedBox(
+                      width: 300,
+                      child: TextFormField(
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.deny(RegExp(r'\s'))
+                        ],
+                        decoration: InputDecoration(
+                          labelText: "이메일",
+                          suffixIcon:
+                              this._emailController.text != '' && !_isEmailValid
+                                  ? Icon(Icons.error, color: Colors.red)
+                                  : null,
+                          errorText:
+                              this._emailController.text != '' && !_isEmailValid
+                                  ? '이메일 형식이 잘못되었습니다.'
+                                  : null,
+                        ),
+                        onChanged: (value) {
+                          formData.email = value;
+                          setState(() {
+                            _isEmailValid =
+                                EmailValidator.validate(value.trim());
+                          });
+                        },
+                        onTap: () {
+                          _validatePassword();
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                      width: 300,
+                      child: TextFormField(
+                        controller: _phoneNumberController,
+                        keyboardType: TextInputType.text,
+                        decoration: InputDecoration(
+                          labelText: "핸드폰 번호 (-를 포함하여 입력)",
+                          suffixIcon:
+                              this._phoneNumberController.text.isNotEmpty &&
+                                      !_isPhoneNumberValid
+                                  ? Icon(Icons.error, color: Colors.red)
+                                  : null,
+                          errorText:
+                              this._phoneNumberController.text.isNotEmpty &&
+                                      !_isPhoneNumberValid
+                                  ? '핸드폰 번호 형식이 잘못되었습니다.'
+                                  : null,
+                        ),
+                        onChanged: (value) {
+                          formData.phoneNumber = value;
+                          bool result = _validatePhoneNumber(value);
+                          if (result) {
+                            setState(() {
+                              _isPhoneNumberValid = true;
+                            });
+                          } else {
+                            setState(() {
+                              _isPhoneNumberValid = false;
+                            });
+                          }
+                        },
+                        onTap: () {
+                          _validatePassword();
+                        },
+                      ),
+                    ),
+                    Container(
+                      width: 250,
+                      margin: EdgeInsets.only(top: 24),
+                      child: ElevatedButton(
+                          onPressed: register,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blueAccent,
+                            foregroundColor: Colors.white,
+                          ),
+                          child: Text("회원 가입",
+                              style: TextStyle(fontWeight: FontWeight.bold))),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   void dispose() {
@@ -46,7 +280,6 @@ class _RegisterPage extends State<RegisterPage> {
     _confirmPasswordController.dispose();
     _emailController.dispose();
     _phoneNumberController.dispose();
-    // TODO: 이벤트 리스너 처리 하기
     _idFocusNode.dispose();
     _passwordFocusNode.dispose();
     _confirmPasswordFocusNode.dispose();
@@ -60,207 +293,16 @@ class _RegisterPage extends State<RegisterPage> {
     super.initState();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBarWidget(),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Center(
-              child: Form(
-            key: formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  margin: EdgeInsets.only(
-                    top: 100,
-                    bottom: 50,
-                  ),
-                  child: Text(
-                    "회원 등록",
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 300,
-                      margin: EdgeInsets.only(left: 90),
-                      child: TextFormField(
-                        focusNode: _idFocusNode,
-                        keyboardType: TextInputType.text,
-                        decoration: InputDecoration(
-                          labelText: "이름",
-                          suffixIcon: _isDuplicated
-                              ? Icon(Icons.error, color: Colors.red)
-                              : null,
-                          errorText: _isDuplicated ? '중복된 아이디입니다.' : null,
-                        ),
-                        onChanged: (value) {
-                          formData.username = value;
-                          print(_checkPass);
-                          if (_isDuplicated) {
-                            setState(() {
-                              _isDuplicated = false;
-                            });
-                          }
-                          setState(() {
-                            _isIdValid = value.isNotEmpty;
-                          });
-                        },
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(left: 10),
-                      child: ElevatedButton(
-                          onPressed: !_isDuplicated && _isIdValid
-                              ? () async {
-                                  bool result =
-                                      await checkDuplicated(formData.username);
-                                  if (!result && _isIdValid) {
-                                    // 중복이 아니고 아이디가 유효하면 패스워드로 이동
-                                    FocusScope.of(context)
-                                        .requestFocus(_passwordFocusNode);
-                                  }
-                                  print(result);
-                                  setState(() {
-                                    _checkPass = !result;
-                                    _isDuplicated = result;
-                                    _isIdValid = false;
-                                  });
-                                }
-                              : null,
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.lightGreen,
-                              minimumSize: Size(50, 30)),
-                          child: Text(
-                            '중복 체크',
-                          )),
-                    )
-                  ],
-                ),
-                SizedBox(
-                  width: 300,
-                  child: TextFormField(
-                    obscureText: true,
-                    controller: _passwordController,
-                    focusNode: _passwordFocusNode,
-                    decoration: InputDecoration(
-                      labelText: "비밀 번호",
-                      suffixIcon: this._passwordController.text != '' &&
-                              this._confirmPasswordController.text != '' &&
-                              !_isConfirmPasswordValid
-                          ? Icon(Icons.error, color: Colors.red)
-                          : null,
-                      errorText: this._passwordController.text != '' &&
-                              this._confirmPasswordController.text != '' &&
-                              !_isConfirmPasswordValid
-                          ? '비밀번호가 일치하지 않습니다.'
-                          : null,
-                    ),
-                    onChanged: (value) {
-                      formData.password = value;
-                      print(_isPasswordValid);
-                      if (value == _confirmPasswordController.text) {
-                        _isConfirmPasswordValid = true;
-                      } else {
-                        _isConfirmPasswordValid = false;
-                      }
-                    },
-                  ),
-                ),
-                SizedBox(
-                  width: 300,
-                  child: TextFormField(
-                    obscureText: true,
-                    controller: _confirmPasswordController,
-                    decoration: InputDecoration(
-                      labelText: '비밀번호 확인',
-                      suffixIcon: this._confirmPasswordController.text != '' &&
-                              this._passwordController.text != '' &&
-                              !_isConfirmPasswordValid
-                          ? Icon(Icons.error, color: Colors.red)
-                          : null,
-                      errorText: this._confirmPasswordController.text != '' &&
-                              this._passwordController.text != '' &&
-                              !_isConfirmPasswordValid
-                          ? '비밀번호가 일치하지 않습니다.'
-                          : null,
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        _isConfirmPasswordValid =
-                            value == _passwordController.text &&
-                                value.isNotEmpty;
-                      });
-                    },
-                  ),
-                ),
-                SizedBox(
-                  width: 300,
-                  child: TextFormField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.deny(RegExp(r'\s'))
-                    ],
-                    decoration: InputDecoration(
-                      labelText: "이메일",
-                      suffixIcon:
-                          this._emailController.text != '' && !_isEmailValid
-                              ? Icon(Icons.error, color: Colors.red)
-                              : null,
-                      errorText:
-                          this._emailController.text != '' && !_isEmailValid
-                              ? '이메일 형식이 잘못되었습니다.'
-                              : null,
-                    ),
-                    onChanged: (value) {
-                      formData.email = value;
-                      setState(() {
-                        _isEmailValid = EmailValidator.validate(value.trim());
-                      });
-                    },
-                  ),
-                ),
-                SizedBox(
-                  width: 300,
-                  child: TextFormField(
-                    keyboardType: TextInputType.text,
-                    decoration: InputDecoration(
-                      labelText: "핸드폰 번호",
-                    ),
-                    onChanged: (value) {
-                      formData.phoneNumber = value;
-                    },
-                  ),
-                ),
-                Container(
-                  width: 250,
-                  margin: EdgeInsets.only(top: 24),
-                  child: ElevatedButton(
-                      onPressed: register,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent,
-                        foregroundColor: Colors.white,
-                      ),
-                      child: Text("회원 가입",
-                          style: TextStyle(fontWeight: FontWeight.bold))),
-                ),
-              ],
-            ),
-          )),
-        ),
-      ),
-    );
+  void _validatePassword() {
+    setState(() {
+      _isConfirmPasswordValid =
+          _confirmPasswordController.text == _passwordController.text;
+    });
+  }
+
+  bool _validatePhoneNumber(String value) {
+    final RegExp phoneNumberRegex = RegExp(r'^01[0-9]{1}-[0-9]{4}-[0-9]{4}$');
+    return phoneNumberRegex.hasMatch(value);
   }
 
   Future<bool> checkDuplicated(String? username) async {
