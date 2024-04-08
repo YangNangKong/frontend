@@ -1,18 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/token_manager.dart';
 
-class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
+class AppBarWidget extends StatefulWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => Size.fromHeight(kToolbarHeight);
+
+  AppBarWidget({Key? key}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _AppBarWidgetState();
+}
+
+class _AppBarWidgetState extends State<AppBarWidget> with RouteAware {
   final String adminPassword = "exit"; // 임시 로그아웃 비밀번호
+  final Future<String?> token = TokenManager.getToken();
+  TextEditingController passwordController = TextEditingController();
+  bool _isHasLeading = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController passwordController = TextEditingController();
-    final Future<String?> token = TokenManager.getToken();
-
+    Route<dynamic>? currentRoute = ModalRoute.of(context);
+    if (currentRoute?.settings.name != '/' &&
+        currentRoute?.settings.name != '/login') {
+      setState(() {
+        _isHasLeading = true;
+      });
+    }
     return AppBar(
-      automaticallyImplyLeading: false,
+      leading: _isHasLeading
+          ? IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            )
+          : null,
       centerTitle: true,
       backgroundColor: Colors.blueAccent,
       title: Text(
@@ -92,5 +119,21 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
         ),
       ],
     );
+  }
+}
+
+class RouteObserverProvider extends InheritedWidget {
+  final RouteObserver<Route> routeObserver;
+
+  RouteObserverProvider({required this.routeObserver, required Widget child})
+      : super(child: child);
+
+  static RouteObserverProvider of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<RouteObserverProvider>()!;
+  }
+
+  @override
+  bool updateShouldNotify(RouteObserverProvider oldWidget) {
+    return routeObserver != oldWidget.routeObserver;
   }
 }

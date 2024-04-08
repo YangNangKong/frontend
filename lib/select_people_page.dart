@@ -5,8 +5,6 @@ import 'package:flutter_application/token_manager.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
-import 'home_page.dart';
-
 class SelectPeoplePage extends StatefulWidget {
   final String number;
 
@@ -140,10 +138,7 @@ class _SelectPeoplePageState extends State<SelectPeoplePage> {
 
     if (result.statusCode == 201) {
       showToast("success");
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
+      Navigator.pushNamed(context, '/');
     } else {
       showToast("fail");
     }
