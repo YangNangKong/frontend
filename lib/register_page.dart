@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -31,11 +32,10 @@ class _RegisterPage extends State<RegisterPage> {
   final FocusNode _confirmPasswordFocusNode = FocusNode();
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _isPhoneNumberNode = FocusNode();
+  Timer? _debounce;
 
   bool _isIdValid = false;
-  bool _isPasswordValid = false;
   bool _isConfirmPasswordValid = true;
-  bool _passwordsMatch = false;
   bool _isDuplicated = false;
   bool _checkPass = false;
   bool _isEmailValid = false;
@@ -100,9 +100,6 @@ class _RegisterPage extends State<RegisterPage> {
                                 _isIdValid = value.isNotEmpty;
                               });
                             },
-                            onTap: () {
-                              _validatePassword();
-                            },
                           ),
                         ),
                         Container(
@@ -117,7 +114,7 @@ class _RegisterPage extends State<RegisterPage> {
                                         FocusScope.of(context)
                                             .requestFocus(_passwordFocusNode);
                                       }
-                                      print(result);
+                                      // print(result);
                                       setState(() {
                                         _checkPass = !result;
                                         _isDuplicated = result;
@@ -183,6 +180,16 @@ class _RegisterPage extends State<RegisterPage> {
                                 _isConfirmPasswordValid = true;
                               });
                             }
+
+                            if (_debounce?.isActive ?? false)
+                              _debounce!.cancel();
+                            _debounce = Timer(Duration(milliseconds: 1000), () {
+                              setState(() {
+                                _isConfirmPasswordValid =
+                                    _confirmPasswordController.text ==
+                                        _passwordController.text;
+                              });
+                            });
                           }),
                     ),
                     SizedBox(
@@ -206,13 +213,13 @@ class _RegisterPage extends State<RegisterPage> {
                         ),
                         onChanged: (value) {
                           formData.email = value;
-                          setState(() {
-                            _isEmailValid =
-                                EmailValidator.validate(value.trim());
+                          if (_debounce?.isActive ?? false) _debounce!.cancel();
+                          _debounce = Timer(Duration(milliseconds: 1000), () {
+                            setState(() {
+                              _isEmailValid =
+                                  EmailValidator.validate(value.trim());
+                            });
                           });
-                        },
-                        onTap: () {
-                          _validatePassword();
                         },
                       ),
                     ),
@@ -236,19 +243,12 @@ class _RegisterPage extends State<RegisterPage> {
                         ),
                         onChanged: (value) {
                           formData.phoneNumber = value;
-                          bool result = _validatePhoneNumber(value);
-                          if (result) {
+                          if (_debounce?.isActive ?? false) _debounce!.cancel();
+                          _debounce = Timer(Duration(milliseconds: 1000), () {
                             setState(() {
-                              _isPhoneNumberValid = true;
+                              _isPhoneNumberValid = _validatePhoneNumber(value);
                             });
-                          } else {
-                            setState(() {
-                              _isPhoneNumberValid = false;
-                            });
-                          }
-                        },
-                        onTap: () {
-                          _validatePassword();
+                          });
                         },
                       ),
                     ),
@@ -293,13 +293,6 @@ class _RegisterPage extends State<RegisterPage> {
     super.initState();
   }
 
-  void _validatePassword() {
-    setState(() {
-      _isConfirmPasswordValid =
-          _confirmPasswordController.text == _passwordController.text;
-    });
-  }
-
   bool _validatePhoneNumber(String value) {
     final RegExp phoneNumberRegex = RegExp(r'^01[0-9]{1}-[0-9]{4}-[0-9]{4}$');
     return phoneNumberRegex.hasMatch(value);
@@ -307,14 +300,12 @@ class _RegisterPage extends State<RegisterPage> {
 
   Future<bool> checkDuplicated(String? username) async {
     // 유저 중복체크 로직
-    print("중복체크를 시작합니다.");
     var result = await http.get(
       Uri.parse('http://10.0.2.2:3000/user?user_name=' + username!),
       headers: <String, String>{
         'Content-Type': 'application/json',
       },
     );
-    // print(jsonDecode(result.body));
     if (jsonDecode(result.body)['status'] == false) {
       return false;
     }
@@ -322,6 +313,14 @@ class _RegisterPage extends State<RegisterPage> {
   }
 
   Future<void> register() async {
+    // 유효성 검사 통과 못하면 리턴
+    if (!_isConfirmPasswordValid ||
+        !_checkPass ||
+        !_isEmailValid ||
+        !_isPhoneNumberValid) {
+      return;
+    }
+
     var result = await http.post(
       Uri.parse('http://10.0.2.2:3000/user'),
       headers: <String, String>{
@@ -329,8 +328,7 @@ class _RegisterPage extends State<RegisterPage> {
       },
       body: jsonEncode(formData),
     );
-    print(result.body);
-    // print(result.statusCode);
+
     if (result.statusCode == 200) {
       showToast("success");
       sleep(Duration(seconds: 1));
@@ -342,7 +340,6 @@ class _RegisterPage extends State<RegisterPage> {
       // TODO: 유효성 검사에 실패한 필드에 실패 내용 노출
       Map<String, dynamic> decodedJson = json.decode(result.body);
       List<dynamic> errors = decodedJson['errors'];
-      print(errors);
       List<String> fieldErrorMessages = [];
       for (var error in errors) {
         if (error['type'] == 'field') {
@@ -350,7 +347,7 @@ class _RegisterPage extends State<RegisterPage> {
         }
       }
       // 결과 출력
-      print(fieldErrorMessages);
+      // print(fieldErrorMessages);
       showToast("invalid");
     } else {
       showToast("fail");
