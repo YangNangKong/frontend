@@ -74,7 +74,6 @@ class _HomePageState extends State<HomePage> {
                             color: Colors.black,
                           ),
                           leftButtonFn: () {
-                            print(text);
                             if (text.length == 11) {
                               Navigator.of(context).pushNamed("/select",
                                   arguments: {"number": text});
