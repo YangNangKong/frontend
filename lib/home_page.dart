@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application/select_people_page.dart';
 import 'package:flutter_application/widget/app_bar_widget.dart';
 import 'package:numeric_keyboard/numeric_keyboard.dart';
 
@@ -25,7 +24,9 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     bool isHintText = text.isEmpty || text == hintText;
     return Scaffold(
-      appBar: AppBarWidget(),
+      appBar: AppBarWidget(
+        currentPage: '/',
+      ),
       body: Center(
         child: SingleChildScrollView(
             child: Column(
@@ -36,7 +37,6 @@ class _HomePageState extends State<HomePage> {
               children: <Widget>[
                 Container(
                   margin: EdgeInsets.only(left: 150),
-                  // fit: FlexFit.tight,
                   child: Container(
                     child: Image.asset(
                       "assets/images/waiting.jpg",
@@ -62,22 +62,22 @@ class _HomePageState extends State<HomePage> {
                           onKeyboardTap: _onKeyboardTap,
                           textColor: Colors.black,
                           rightButtonFn: () {
-                            setState(() {
-                              text = text.substring(0, text.length - 1);
-                            });
+                            if (!isHintText) {
+                              // 아무 것도 입력이 되어 있지 않을 때 방지
+                              setState(() {
+                                text = text.substring(0, text.length - 1);
+                              });
+                            }
                           },
                           rightIcon: Icon(
                             Icons.backspace,
                             color: Colors.black,
                           ),
                           leftButtonFn: () {
+                            print(text);
                             if (text.length == 11) {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      SelectPeoplePage(number: text),
-                                ),
-                              );
+                              Navigator.of(context).pushNamed("/select",
+                                  arguments: {"number": text});
                             }
                           },
                           leftIcon: Icon(
@@ -120,8 +120,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   _onKeyboardTap(String value) {
-    setState(() {
-      text = text + value;
-    });
+    if (text.length <= 10) {
+      setState(() {
+        text = text + value;
+      });
+    }
   }
 }

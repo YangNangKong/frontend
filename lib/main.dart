@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       theme: _buildTheme(Brightness.light),
       home: AuthCheck(),
       initialRoute: '/',
-      routes: routes,
+      onGenerateRoute: Routes.generateRoute,
     );
   }
 

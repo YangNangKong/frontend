@@ -10,8 +10,6 @@ import 'package:flutter_application/widget/app_bar_widget.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
-import 'home_page.dart';
-
 class RegisterPage extends StatefulWidget {
   RegisterPage({Key? key}) : super(key: key);
 
@@ -44,7 +42,9 @@ class _RegisterPage extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarWidget(),
+      appBar: AppBarWidget(
+        currentPage: '/register',
+      ),
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).unfocus();
@@ -332,10 +332,7 @@ class _RegisterPage extends State<RegisterPage> {
     if (result.statusCode == 200) {
       showToast("success");
       sleep(Duration(seconds: 1));
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
+      Navigator.of(context).pushNamed('/');
     } else if (result.statusCode == 400) {
       // TODO: 유효성 검사에 실패한 필드에 실패 내용 노출
       Map<String, dynamic> decodedJson = json.decode(result.body);

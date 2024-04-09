@@ -5,7 +5,6 @@ import 'package:flutter_application/token_manager.dart';
 import 'package:flutter_application/widget/app_bar_widget.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'home_page.dart';
 import 'login_form_data.dart';
 
 class LoginPage extends StatefulWidget {
@@ -22,7 +21,9 @@ class _LoginPage extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarWidget(),
+      appBar: AppBarWidget(
+        currentPage: '/login',
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -77,7 +78,7 @@ class _LoginPage extends State<LoginPage> {
                         child: ElevatedButton(
                             onPressed: () async {
                               if (await login() == true) {
-                                Navigator.pushNamed(context, '/');
+                                Navigator.of(context).pushNamed('/');
                               }
                             },
                             style: ElevatedButton.styleFrom(
@@ -105,8 +106,8 @@ class _LoginPage extends State<LoginPage> {
                                         fontWeight: FontWeight.bold,
                                       ),
                                       recognizer: TapGestureRecognizer()
-                                        ..onTap = () => Navigator.pushNamed(
-                                            context, '/register')),
+                                        ..onTap = () => Navigator.of(context)
+                                            .pushNamed('/register')),
                                 ],
                               ),
                             ),
@@ -138,10 +139,7 @@ class _LoginPage extends State<LoginPage> {
         showToast("success");
         TokenManager.setToken(json.decode(result.body)['token']);
         // 로그인 후에는 홈 페이지로 이동
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage()),
-        );
+        Navigator.of(context).pushNamed('/');
         return true;
       } else {
         showToast("fail");

@@ -1,14 +1,16 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application/home_page.dart';
 import 'package:flutter_application/token_manager.dart';
+import 'package:flutter_application/widget/app_bar_widget.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 class SelectPeoplePage extends StatefulWidget {
   final String number;
 
-  SelectPeoplePage({Key? key, required this.number}) : super(key: key);
+  SelectPeoplePage({required this.number});
 
   @override
   _SelectPeoplePageState createState() => _SelectPeoplePageState();
@@ -23,7 +25,6 @@ class _SelectPeoplePageState extends State<SelectPeoplePage> {
   void initState() {
     super.initState();
     setState(() {
-      print(peopleCountList[0]);
       selected = peopleCountList[0];
     });
   }
@@ -31,17 +32,8 @@ class _SelectPeoplePageState extends State<SelectPeoplePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: Colors.blueAccent,
-        title: Text(
-          "YNK Tabling",
-          style: TextStyle(
-            fontSize: 32,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
-        ),
+      appBar: AppBarWidget(
+        currentPage: '/select',
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -117,7 +109,7 @@ class _SelectPeoplePageState extends State<SelectPeoplePage> {
     Map<String, dynamic> data = {
       'shop_id': 1,
       'tabling_type': "waiting",
-      'personnel': int.parse(people.replaceAll("명", "")),
+      'personnel': int.parse(((people.replaceAll("명", "")).replaceAll("이상", "").trim())),
       'phone_number': formatPhoneNumber(number),
     };
 
@@ -133,12 +125,16 @@ class _SelectPeoplePageState extends State<SelectPeoplePage> {
         body: json.encode(data),
       );
     } else {
-      Navigator.pushNamed(context, '/login');
+      Navigator.of(context).pushNamed('/login');
+      print("로그인실패");
     }
 
-    if (result.statusCode == 201) {
+    if (result != null && result.statusCode == 201) {
       showToast("success");
-      Navigator.pushNamed(context, '/');
+      // 제거할 경로가 더 이상 남지 않을 때까지 스택의 모든 경로를 제거
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => HomePage()),
+          (Route<dynamic> route) => false);
     } else {
       showToast("fail");
     }
