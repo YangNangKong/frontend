@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application/token_manager.dart';
 import 'package:flutter_application/widget/app_bar_widget.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
-import 'login_form_data.dart';
+import '../model/login_form_data.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -22,7 +23,7 @@ class _LoginPage extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBarWidget(
-        currentPage: '/login',
+        hasBack: false,
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -78,7 +79,9 @@ class _LoginPage extends State<LoginPage> {
                         child: ElevatedButton(
                             onPressed: () async {
                               if (await login() == true) {
-                                Navigator.of(context).pushNamed('/');
+                                showToast("success");
+                              } else {
+                                showToast("fail");
                               }
                             },
                             style: ElevatedButton.styleFrom(
@@ -106,8 +109,8 @@ class _LoginPage extends State<LoginPage> {
                                         fontWeight: FontWeight.bold,
                                       ),
                                       recognizer: TapGestureRecognizer()
-                                        ..onTap = () => Navigator.of(context)
-                                            .pushNamed('/register')),
+                                        ..onTap =
+                                            () => context.push('/register')),
                                 ],
                               ),
                             ),
@@ -126,23 +129,26 @@ class _LoginPage extends State<LoginPage> {
     try {
       var result = await http.post(
         // http://34.22.93.157:3000
-        Uri.parse('http://10.0.2.2:3000/login'),
+        Uri.parse('http://localhost:3000/login'),
         headers: <String, String>{
           'Content-Type': 'application/json',
         },
         body: json.encode(formData),
       );
       print(result.body);
+      print(formData.username);
       if (result.statusCode == 200) {
-        // var val = json.encode(formData);
-
-        showToast("success");
         TokenManager.setToken(json.decode(result.body)['token']);
-        // 로그인 후에는 홈 페이지로 이동
-        Navigator.of(context).pushNamed('/');
+        if (formData.username == 'masterNangKong') {
+          print("들어와요?");
+          // 마스터 계정일 때 관리 페이지로 (임시)
+          context.go('/waiting_list');
+        } else {
+          // 로그인 후에는 홈 페이지로 이동
+          context.go('/');
+        }
         return true;
       } else {
-        showToast("fail");
         return false;
       }
     } catch (e) {

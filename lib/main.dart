@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_application/routes.dart';
-import 'auth_check.dart';
+import 'package:flutter_application/router.dart';
 
 void main() async {
   runApp(MyApp());
@@ -15,12 +14,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // 가로 모드로 고정
     SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft]);
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
+    return MaterialApp.router(
+      // debugShowCheckedModeBanner: false,
       theme: _buildTheme(Brightness.light),
-      home: AuthCheck(),
-      initialRoute: '/',
-      onGenerateRoute: Routes.generateRoute,
+      routerConfig: router,
     );
   }
 

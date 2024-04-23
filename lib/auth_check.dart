@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/token_manager.dart';
-import 'home_page.dart';
-import 'login_page.dart';
+import 'page/home_page.dart';
+import 'page/login_page.dart';
 
 class AuthCheck extends StatelessWidget {
   @override

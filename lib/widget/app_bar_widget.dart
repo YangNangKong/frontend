@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application/login_page.dart';
 import 'package:flutter_application/token_manager.dart';
+import 'package:go_router/go_router.dart';
 
 class AppBarWidget extends StatefulWidget implements PreferredSizeWidget {
-  final String currentPage;
+  final bool hasBack;
 
   @override
   Size get preferredSize => Size.fromHeight(kToolbarHeight);
 
-  AppBarWidget({Key? key, required this.currentPage}) : super(key: key);
+  AppBarWidget({Key? key, required this.hasBack}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _AppBarWidgetState();
@@ -27,9 +27,13 @@ class _AppBarWidgetState extends State<AppBarWidget> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.currentPage != '/' && widget.currentPage != '/login') {
+    if (widget.hasBack) {
       setState(() {
         _isHasLeading = true;
+      });
+    } else {
+      setState(() {
+        _isHasLeading = false;
       });
     }
     return AppBar(
@@ -91,10 +95,7 @@ class _AppBarWidgetState extends State<AppBarWidget> with RouteAware {
                                       adminPassword) {
                                     // 비밀번호가 일치하는 경우 로그아웃
                                     TokenManager.removeToken();
-                                    Navigator.of(context).pushAndRemoveUntil(
-                                        MaterialPageRoute(
-                                            builder: (context) => LoginPage()),
-                                        (Route<dynamic> route) => false);
+                                    context.go('/login');
                                   } else {
                                     // 비밀번호가 일치하지 않는 경우
                                     ScaffoldMessenger.of(context).showSnackBar(
