@@ -5,8 +5,8 @@ import 'package:provider/provider.dart';
 
 import '../view_model/WatingListViewModel.dart';
 
-class WaitingListWidget extends StatelessWidget {
-  const WaitingListWidget({super.key});
+class WaitingListPage extends StatelessWidget {
+  const WaitingListPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,14 +15,13 @@ class WaitingListWidget extends StatelessWidget {
       builder: (context, child) {
         return Scaffold(
           appBar: AppBarWidget(
-            currentPage: '/waitingList',
+            hasBack: false,
           ),
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 decoration: BoxDecoration(
-
                 ),
                 margin: EdgeInsets.symmetric(vertical: 20),
                 child: Row(

@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_application/register_form_data.dart';
+import 'package:flutter_application/model/register_form_data.dart';
 import 'package:flutter_application/widget/app_bar_widget.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -43,7 +43,7 @@ class _RegisterPage extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBarWidget(
-        currentPage: '/register',
+        hasBack: true,
       ),
       body: GestureDetector(
         onTap: () {

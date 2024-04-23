@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application/home_page.dart';
+import 'package:flutter_application/page/home_page.dart';
 import 'package:flutter_application/token_manager.dart';
 import 'package:flutter_application/widget/app_bar_widget.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -33,7 +33,7 @@ class _SelectPeoplePageState extends State<SelectPeoplePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBarWidget(
-        currentPage: '/select',
+        hasBack: true,
       ),
       body: Center(
         child: SingleChildScrollView(
