@@ -3,12 +3,10 @@ import 'package:flutter_application/token_manager.dart';
 import 'package:go_router/go_router.dart';
 
 class AppBarWidget extends StatefulWidget implements PreferredSizeWidget {
-  final bool hasBack;
-
   @override
   Size get preferredSize => Size.fromHeight(kToolbarHeight);
 
-  AppBarWidget({Key? key, required this.hasBack}) : super(key: key);
+  AppBarWidget({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _AppBarWidgetState();
@@ -18,7 +16,6 @@ class _AppBarWidgetState extends State<AppBarWidget> with RouteAware {
   final String adminPassword = "exit"; // 임시 로그아웃 비밀번호
   final Future<String?> token = TokenManager.getToken();
   TextEditingController passwordController = TextEditingController();
-  bool _isHasLeading = false;
 
   @override
   void initState() {
@@ -27,24 +24,7 @@ class _AppBarWidgetState extends State<AppBarWidget> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.hasBack) {
-      setState(() {
-        _isHasLeading = true;
-      });
-    } else {
-      setState(() {
-        _isHasLeading = false;
-      });
-    }
     return AppBar(
-      leading: _isHasLeading
-          ? IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            )
-          : null,
       centerTitle: true,
       backgroundColor: Colors.blueAccent,
       title: Text(

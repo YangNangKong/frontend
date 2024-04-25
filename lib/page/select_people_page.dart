@@ -32,9 +32,7 @@ class _SelectPeoplePageState extends State<SelectPeoplePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarWidget(
-        hasBack: true,
-      ),
+      appBar: AppBarWidget(),
       body: Center(
         child: SingleChildScrollView(
           child: Row(

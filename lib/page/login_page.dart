@@ -22,9 +22,7 @@ class _LoginPage extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarWidget(
-        hasBack: false,
-      ),
+      appBar: AppBarWidget(),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -144,6 +142,8 @@ class _LoginPage extends State<LoginPage> {
           // 마스터 계정일 때 관리 페이지로 (임시)
           context.go('/waiting_list');
         } else {
+          print("들어와요2222?");
+
           // 로그인 후에는 홈 페이지로 이동
           context.go('/');
         }

@@ -42,9 +42,7 @@ class _RegisterPage extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarWidget(
-        hasBack: true,
-      ),
+      appBar: AppBarWidget(),
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).unfocus();

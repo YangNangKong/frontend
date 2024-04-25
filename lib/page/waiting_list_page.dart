@@ -14,9 +14,7 @@ class WaitingListPage extends StatelessWidget {
       create: (_) => WaitingListViewModel(),
       builder: (context, child) {
         return Scaffold(
-          appBar: AppBarWidget(
-            hasBack: false,
-          ),
+          appBar: AppBarWidget(),
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

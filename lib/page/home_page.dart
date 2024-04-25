@@ -24,9 +24,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     bool isHintText = text.isEmpty || text == hintText;
     return Scaffold(
-      appBar: AppBarWidget(
-        hasBack: false,
-      ),
+      appBar: AppBarWidget(),
       body: Center(
         child: SingleChildScrollView(
             child: Column(
