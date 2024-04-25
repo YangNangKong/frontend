@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/widget/app_bar_widget.dart';
-import 'package:flutter_application/widget/waiting_list_card_widget.dart';
 import 'package:provider/provider.dart';
 
-import '../view_model/WatingListViewModel.dart';
+import '../view_model/tabling_list_view_model.dart';
+import '../widget/tabling_list_card_widget.dart';
 
-class WaitingListPage extends StatelessWidget {
-  const WaitingListPage({super.key});
+class TablingListPage extends StatelessWidget {
+  const TablingListPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<WaitingListViewModel>(
-      create: (_) => WaitingListViewModel(),
+    return ChangeNotifierProvider<TablingListViewModel>(
+      create: (_) => TablingListViewModel(),
       builder: (context, child) {
         return Scaffold(
           appBar: AppBarWidget(),
@@ -75,9 +75,9 @@ class WaitingListPage extends StatelessWidget {
                   ],
                 ),
               ),
-              ...context.read<WaitingListViewModel>().waitingList.map(
-                  (waitingData) =>
-                      WaitingListCardWidget(waitingListEntity: waitingData)),
+              ...context.read<TablingListViewModel>().tablingList.map(
+                  (data) =>
+                      TablingListCardWidget(tablingListEntity: data)),
             ],
           ),
         );

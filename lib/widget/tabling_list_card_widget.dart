@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application/entity/WaitingListEntity.dart';
 
-class WaitingListCardWidget extends StatelessWidget {
-  WaitingListEntity waitingListEntity;
+import '../entity/tabling_list_entity.dart';
 
-  WaitingListCardWidget(
-      {super.key, required WaitingListEntity this.waitingListEntity});
+class TablingListCardWidget extends StatelessWidget {
+  TablingListEntity tablingListEntity;
+
+  TablingListCardWidget(
+      {super.key, required TablingListEntity this.tablingListEntity});
 
   @override
   Widget build(BuildContext context) {
-    final WaitingListEntity waitingListEntity = this.waitingListEntity;
+    final TablingListEntity tablingListEntity = this.tablingListEntity;
 
     return Container(
       margin: EdgeInsets.symmetric(vertical: 5),
@@ -18,7 +19,7 @@ class WaitingListCardWidget extends StatelessWidget {
           Expanded(
             flex: 1,
             child: Text(
-              '${waitingListEntity.id}',
+              '${tablingListEntity.id}',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 20,
@@ -28,7 +29,7 @@ class WaitingListCardWidget extends StatelessWidget {
           Expanded(
             flex: 1,
             child: Text(
-              '${waitingListEntity.phoneNumber}',
+              '${tablingListEntity.phoneNumber}',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 20,
@@ -38,7 +39,7 @@ class WaitingListCardWidget extends StatelessWidget {
           Expanded(
             flex: 1,
             child: Text(
-              '${waitingListEntity.personnel}',
+              '${tablingListEntity.personnel}',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 20,

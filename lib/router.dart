@@ -3,7 +3,7 @@ import 'package:flutter_application/auth_check.dart';
 import 'package:flutter_application/page/register_page.dart';
 import 'package:flutter_application/page/login_page.dart';
 import 'package:flutter_application/page/select_people_page.dart';
-import 'package:flutter_application/page/waiting_list_page.dart';
+import 'package:flutter_application/page/tabling_list_page.dart';
 import 'package:go_router/go_router.dart';
 
 final GoRouter router = GoRouter(
@@ -38,7 +38,7 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/waiting_list',
       builder: (BuildContext context, GoRouterState state) {
-        return WaitingListPage();
+        return TablingListPage();
       },
     ),
   ],

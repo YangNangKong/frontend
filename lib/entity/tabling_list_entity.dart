@@ -1,4 +1,4 @@
-class WaitingListEntity {
+class TablingListEntity {
   int id;
   int shopId;
   String tablingType;
@@ -8,7 +8,7 @@ class WaitingListEntity {
   DateTime updatedAt;
   DateTime deletedAt;
 
-  WaitingListEntity({
+  TablingListEntity({
     required this.id,
     required this.shopId,
     required this.tablingType,
