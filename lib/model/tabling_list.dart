@@ -13,17 +13,19 @@ class TablingList {
   final DateTime updatedAt;
   final DateTime deletedAt;
 
-  TablingList(
-     this.id,
-     this.shopId,
-     this.tablingType,
-     this.phoneNumber,
-     this.personnel,
-     this.updatedAt,
-     this.createdAt,
-     this.deletedAt,
-  );
+  TablingList({
+    required this.id,
+    required this.shopId,
+    required this.tablingType,
+    required this.phoneNumber,
+    required this.personnel,
+    required this.updatedAt,
+    required this.createdAt,
+    required this.deletedAt,
+  });
 
-  factory TablingList.fromJson(Map<String, dynamic> json) => _$TablingListFromJson(json);
+  factory TablingList.fromJson(Map<String, dynamic> json) =>
+      _$TablingListFromJson(json);
+
   Map<String, dynamic> toJson() => _$TablingListToJson(this);
 }

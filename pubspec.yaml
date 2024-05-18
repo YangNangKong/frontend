@@ -48,6 +48,7 @@ dependencies:
   retrofit: ^4.1.0
   dio: ^5.4.3+1
   json_annotation: ^4.9.0
+  retrofit_generator: ^8.1.0
 
 dev_dependencies:
   build_runner: ^2.1.7
